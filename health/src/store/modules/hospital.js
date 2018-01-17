@@ -40,6 +40,9 @@ const hospital = {
     },
     updateHospital ({commit}, param) {
       return fetch.commonApi('/hospital/updateRecordById', param)
+    },
+    insertHospital ({commit}, param) {
+      return fetch.commonApi('/hospital/insertRecord', param)
     }
   }
 }
