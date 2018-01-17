@@ -2,9 +2,9 @@ import axios from 'axios'
 
 var service = axios.create({
   baseURL: 'http://localhost:9090',
-  timeout: 5000,
-  headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+  timeout: 5000
 })
+service.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 // 请求拦截器
 service.interceptors.request.use(function (config) {
   return config
