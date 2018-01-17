@@ -43,22 +43,19 @@
       </el-pagination>-->
       <el-dialog :title="dialogTitle[dialogStatus]" :visible.sync="dialogVisible" width="25%" center>
         <el-form :model="form" label-width="100px">
-          <el-form-item label="工号：" v-if="dialogStatus === 'update'" >
+          <el-form-item label="id：" v-if="dialogStatus === 'update'" >
             <el-input v-model.number="form.id" :disabled="true"/>
           </el-form-item>
-          <el-form-item label="姓名：">
+          <el-form-item label="名称：">
             <el-input v-model.number="form.name"/>
-          </el-form-item>
-          <el-form-item label="性别：">
-            <el-radio-group v-model="form.sex">
-              <el-radio label="男">男</el-radio>
-              <el-radio label="女">女</el-radio>
-            </el-radio-group>
           </el-form-item>
           <el-form-item label="联系电话：" :rules="[
             { required: true, message: '电话不能为空'},
             { type: 'number', message: '电话必须为数字值'}]">
             <el-input v-model.number="form.phone"/>
+          </el-form-item>
+          <el-form-item label="简介：">
+            <el-input type="textarea" v-model="form.brief"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -72,7 +69,7 @@
 </template>
 
 <script>
-import fetch from '../../util/fetch'
+
 export default {
   data () {
     return {
@@ -83,6 +80,10 @@ export default {
         create: '新增面板'
       },
       form: {
+        id: '',
+        name: '',
+        phone: '',
+        brief: ''
       },
       tableData: []
     }
@@ -92,9 +93,8 @@ export default {
   },
   methods: {
     getHospitalList () {
-      fetch.commonApi('/hospital/selectAllRecord', null).then(res => {
+      this.$store.dispatch('selectHospitals').then(res => {
         this.tableData = res
-        console.log(this.tableData)
         console.log('调用封装后的axios成功')
       })
     },
@@ -109,17 +109,14 @@ export default {
       this.dialogVisible = true
     },
     handleEdit () {
-      for (const v of this.tableData) {
-        if (this.form.id === v.id) {
-          const index = this.tableData.indexOf(v)
-          this.tableData.splice(index, 1, this.form)
-          break
-        }
-      }
-      this.dialogVisible = false
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
+      console.log(this.form)
+      this.$store.dispatch('updateHospital', this.form).then(res => {
+        this.dialogVisible = false
+        this.getHospitalList()
+        this.$message({
+          type: 'success',
+          message: '编辑成功!'
+        })
       })
     },
     handleAdd () {
