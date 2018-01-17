@@ -18,10 +18,18 @@
         <el-table-column prop="id" label="id" sortable >
         </el-table-column>
         <el-table-column prop="name" label="名称" >
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top" width="250">
+              <p>简介: {{ scope.row.brief }}</p>
+              <div slot="reference" class="name-wrapper">
+                <el-tag size="medium">{{ scope.row.name }}</el-tag>
+              </div>
+            </el-popover>
+          </template>
         </el-table-column>
         <el-table-column prop="phone" label="联系电话">
         </el-table-column>
-        <el-table-column prop="brief" label="简介" width="300">
+        <el-table-column prop="address" label="地址">
         </el-table-column>
         <el-table-column label="操作" width="180">
           <template slot-scope="scope">
@@ -41,7 +49,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="tableData.length">
       </el-pagination>-->
-      <el-dialog :title="dialogTitle[dialogStatus]" :visible.sync="dialogVisible" width="25%" center>
+      <el-dialog :title="dialogTitle[dialogStatus]" :visible.sync="dialogVisible" width="40%" center>
         <el-form :model="form" label-width="100px">
           <el-form-item label="id：" v-if="dialogStatus === 'update'" >
             <el-input v-model.number="form.id" :disabled="true"/>
@@ -54,8 +62,13 @@
             { type: 'number', message: '电话必须为数字值'}]">
             <el-input v-model.number="form.phone"/>
           </el-form-item>
+          <el-form-item label="地址：">
+            <el-input v-model.number="form.address"/>
+          </el-form-item>
           <el-form-item label="简介：">
-            <el-input type="textarea" v-model="form.brief"></el-input>
+            <el-input type="textarea"
+                      :autosize="{ minRows: 2, maxRows: 9}"
+                      v-model="form.brief"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -83,6 +96,7 @@ export default {
         id: '',
         name: '',
         phone: '',
+        address: '',
         brief: ''
       },
       tableData: []
@@ -111,21 +125,37 @@ export default {
     handleEdit () {
       console.log(this.form)
       this.$store.dispatch('updateHospital', this.form).then(res => {
-        this.dialogVisible = false
-        this.getHospitalList()
-        this.$message({
-          type: 'success',
-          message: '编辑成功!'
-        })
+        if (res === 1) {
+          this.dialogVisible = false
+          this.getHospitalList()
+          this.$message({
+            type: 'success',
+            message: '编辑成功!'
+          })
+        } else {
+          this.getHospitalList()
+          this.$message({
+            type: 'error',
+            message: '编辑失败!'
+          })
+        }
       })
     },
     handleAdd () {
-      this.form.id = 5
-      this.tableData.unshift(this.form)
-      this.dialogVisible = false
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
+      this.$store.dispatch('insertHospital', this.form).then(res => {
+        if (res === 1) {
+          this.dialogVisible = false
+          this.$message({
+            type: 'success',
+            message: '添加成功!'
+          })
+          this.getHospitalList()
+        } else {
+          this.$message({
+            type: 'success',
+            message: '添加失败!'
+          })
+        }
       })
     },
     handleDelete (index, row) {
