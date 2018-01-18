@@ -1,6 +1,11 @@
 import axios from 'axios'
+import Qs from 'qs'
 
 var service = axios.create({
+  transformRequest: [function (data) {
+    data = Qs.stringify(data)
+    return data
+  }],
   baseURL: 'http://localhost:9090',
   timeout: 5000
 })
