@@ -52,10 +52,10 @@
       <el-dialog :title="dialogTitle[dialogStatus]" :visible.sync="dialogVisible" width="40%" center>
         <el-form :model="form" label-width="100px">
           <el-form-item label="id：" v-if="dialogStatus === 'update'" >
-            <el-input v-model.number="form.id" :disabled="true"/>
+            <el-input v-model="form.id" :disabled="true"/>
           </el-form-item>
           <el-form-item label="名称：">
-            <el-input v-model.number="form.name"/>
+            <el-input v-model="form.name"/>
           </el-form-item>
           <el-form-item label="联系电话：" :rules="[
             { required: true, message: '电话不能为空'},
@@ -63,12 +63,13 @@
             <el-input v-model.number="form.phone"/>
           </el-form-item>
           <el-form-item label="地址：">
-            <el-input v-model.number="form.address"/>
+            <el-input v-model="form.address"/>
           </el-form-item>
           <el-form-item label="简介：">
             <el-input type="textarea"
                       :autosize="{ minRows: 2, maxRows: 9}"
-                      v-model="form.brief"></el-input>
+                      v-model="form.brief">
+            </el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
