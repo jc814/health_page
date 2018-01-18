@@ -3,8 +3,8 @@
     <div class="header">
       <el-row>
         <el-col :span="5">
-          <el-input placeholder="请输入内容">
-            <el-button slot="append">搜索</el-button>
+          <el-input placeholder="请输入内容" v-model="search.name">
+            <el-button slot="append" @click="getHospitalList()">搜索</el-button>
           </el-input>
         </el-col>
         <el-col :span="2" :offset="1">
@@ -40,15 +40,15 @@
           </template>
         </el-table-column>
       </el-table>
-      <!--<el-pagination
+      <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="1"
-        :page-sizes="[5, 10, 20, 30]"
-        :page-size="5"
+        :current-page="search.currentPage"
+        :page-sizes="[1, 2, 3, 4]"
+        :page-size="search.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="tableData.length">
-      </el-pagination>-->
+        :total="search.totalCount">
+      </el-pagination>
       <el-dialog :title="dialogTitle[dialogStatus]" :visible.sync="dialogVisible" width="40%" center>
         <el-form :model="form" label-width="100px">
           <el-form-item label="id：" v-if="dialogStatus === 'update'" >
@@ -99,6 +99,12 @@ export default {
         address: '',
         brief: ''
       },
+      search: {
+        name: '', // 名称查询
+        currentPage: 1, // 当前页码
+        totalCount: 1000, // 默认数据总数
+        pageSize: 2 // 默认每页数据量
+      },
       tableData: []
     }
   },
@@ -106,9 +112,10 @@ export default {
     this.getHospitalList()
   },
   methods: {
-    getHospitalList () {
-      this.$store.dispatch('selectHospitals').then(res => {
-        this.tableData = res
+    getHospitalList (currentPage, pagesize) {
+      this.$store.dispatch('selectHospitals', this.search).then(res => {
+        this.tableData = res.data
+        this.search.totalCount = res.number
         console.log('调用封装后的axios成功')
       })
     },
@@ -121,6 +128,9 @@ export default {
       this.dialogStatus = 'create'
       this.form = {}
       this.dialogVisible = true
+    },
+    handleFilter () {
+      this.getHospitalList()
     },
     handleEdit () {
       console.log(this.form)
@@ -159,15 +169,28 @@ export default {
       })
     },
     handleDelete (index, row) {
-      this.$confirm('此操作将永久删除该人员, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该医院, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.tableData.splice(index, 1)
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
+        var param = {
+          id: ''
+        }
+        param.id = row.id
+        this.$store.dispatch('deleteHospital', param).then(res => {
+          if (res === 1) {
+            this.tableData.splice(index, 1)
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: '删除失败!'
+            })
+          }
         })
       }).catch(() => {
         this.$message({
@@ -175,6 +198,14 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    handleSizeChange (val) {
+      this.search.pageSize = val
+      this.getHospitalList(this.search.currentPage, this.search.pageSize)
+    },
+    handleCurrentChange (val) {
+      this.search.currentPage = val
+      this.getHospitalList(this.search.currentPage, this.search.pageSize)
     }
   }
 }
