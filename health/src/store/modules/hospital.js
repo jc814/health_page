@@ -35,7 +35,7 @@ const hospital = {
     }
   },
   actions: {
-    selectHospitals (param) {
+    selectHospitals ({commit}, param) {
       return fetch.commonApi('/hospital/selectAllRecord', param)
     },
     updateHospital ({commit}, param) {
@@ -43,6 +43,9 @@ const hospital = {
     },
     insertHospital ({commit}, param) {
       return fetch.commonApi('/hospital/insertRecord', param)
+    },
+    deleteHospital ({commit}, param) {
+      return fetch.commonApi('/hospital/deleteRecord', param)
     }
   }
 }
