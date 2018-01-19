@@ -82,19 +82,37 @@ export default {
       search: {
         name: '', // 名称查询
         currentPage: 1, // 当前页码
-        totalCount: 1000, // 默认数据总数
+        totalCount: 5, // 默认数据总数
         pageSize: 2 // 默认每页数据量
       },
+      type: '',
+      hospitalId: ''
     }
   },
-  created () {
+  mounted () {
+    this.type = this.$store.getters['admin/type']
+    this.hospitalId = this.$store.getters['admin/hospitalId']
     this.getHospitalName()
   },
   methods: {
     getHospitalName () {
       this.$store.dispatch('selectHospitals', null).then(res => {
-        this.hospitalNames = res.data;
+        this.hospitalNames = res.data
       })
+    },
+    getOfficeByHospitalId (currentPage, pagesize) {
+      this.$store.dispatch('selectOfficeHospitalId', this.search).then(res => {
+        this.hospitalNames = res.data
+        this.search.totalCount = res.tatalNum
+      })
+    },
+    handleSizeChange (val) {
+      this.search.pageSize = val
+      this.getOfficeByHospitalId(this.search.currentPage, this.search.pageSize)
+    },
+    handleCurrentChange (val) {
+      this.search.currentPage = val
+      this.getOfficeByHospitalId(this.search.currentPage, this.search.pageSize)
     }
   }
 }
