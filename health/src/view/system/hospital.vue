@@ -114,7 +114,7 @@ export default {
   },
   methods: {
     getHospitalList (currentPage, pagesize) {
-      this.$store.dispatch('selectHospitals', this.search).then(res => {
+      this.$store.dispatch('hospital/selectHospitals', this.search).then(res => {
         this.tableData = res.data
         this.search.totalCount = res.number
         console.log('调用封装后的axios成功')
@@ -135,7 +135,7 @@ export default {
     },
     handleEdit () {
       console.log(this.form)
-      this.$store.dispatch('updateHospital', this.form).then(res => {
+      this.$store.dispatch('hospital/updateHospital', this.form).then(res => {
         if (res === 1) {
           this.dialogVisible = false
           this.getHospitalList()
@@ -153,7 +153,7 @@ export default {
       })
     },
     handleAdd () {
-      this.$store.dispatch('insertHospital', this.form).then(res => {
+      this.$store.dispatch('hospital/insertHospital', this.form).then(res => {
         if (res === 1) {
           this.dialogVisible = false
           this.$message({
@@ -179,7 +179,7 @@ export default {
           id: ''
         }
         param.id = row.id
-        this.$store.dispatch('deleteHospital', param).then(res => {
+        this.$store.dispatch('hospital/deleteHospital', param).then(res => {
           if (res === 1) {
             this.tableData.splice(index, 1)
             this.$message({
