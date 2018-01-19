@@ -2,6 +2,7 @@ import fetch from '../../util/fetch'
 
 const hospital = {
   // 定义状态
+  namespaced: true,
   state: {
     id: '',
     name: '',
