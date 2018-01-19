@@ -12,6 +12,7 @@ import scheduleArrange from '../view/system/scheduleArrange'
 import comment from '../demo/comment'
 import map from '../demo/map'
 import table from '../demo/table'
+import adminLogin from '../view/system/adminLogin'
 
 Vue.use(Router)
 
@@ -24,7 +25,7 @@ export default new Router({
       children: [
         {
           path: '/',
-          component: table
+          component: office
         }, {
           path: '/report',
           component: report
@@ -63,6 +64,9 @@ export default new Router({
     }, {
       path: '/haha',
       component: comment
+    }, {
+      path: '/adminLogin',
+      component: adminLogin
     }
   ]
 })
