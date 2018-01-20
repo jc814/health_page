@@ -2,6 +2,7 @@
 
 import hospital from './modules/hospital'
 import admin from './modules/admin'
+import office from './modules/office'
 import Vue from 'Vue'
 import Vuex from 'vuex'
 
@@ -15,7 +16,8 @@ const store = new Vuex.Store({
   },
   modules: {
     hospital,
-    admin
+    admin,
+    office
   }
 })
 
