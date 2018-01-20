@@ -2,8 +2,20 @@
   <div class="content">
     <div class="header">
       <el-row>
-        <el-col :span="5">
-          <el-input placeholder="请输入内容" >
+        <el-col :span="3">
+          <el-select v-model="search.hospitalId" filterable placeholder="请选择医院" v-if="type === 1" clearable
+                     @change="getOfficeByHospitalId"
+                     @clear="getOfficeByHospitalId">
+            <el-option
+              v-for="item in hospitalNames"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="4">
+          <el-input placeholder="请输入内容科室名" clearable>
             <el-button slot="append" @click="">搜索</el-button>
           </el-input>
         </el-col>
@@ -17,7 +29,7 @@
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="id" label="id" sortable >
         </el-table-column>
-        <el-table-column prop="HospitalName" label="所属医院">
+        <el-table-column prop="hospitalName" label="所属医院">
         </el-table-column>
         <el-table-column prop="name" label="科室名称">
         </el-table-column>
@@ -71,7 +83,7 @@ export default {
         update: '编辑面板',
         create: '新增面板'
       },
-      tableDate: [],
+      tableData: [],
       hospitalNames: [],
       form: {
         id: '',
@@ -81,38 +93,49 @@ export default {
       },
       search: {
         name: '', // 名称查询
+        hospitalId: '', // 医院id
         currentPage: 1, // 当前页码
         totalCount: 5, // 默认数据总数
         pageSize: 2 // 默认每页数据量
       },
-      type: '',
-      hospitalId: ''
+      type: ''
     }
   },
   mounted () {
     this.type = this.$store.getters['admin/type']
-    this.hospitalId = this.$store.getters['admin/hospitalId']
-    this.getHospitalName()
+    this.search.hospitalId = this.$store.getters['admin/hospitalId']
+    if (this.type === 1) {
+      this.getHospitalName()
+    } else {
+      this.getOfficeByHospitalId()
+    }
   },
   methods: {
     getHospitalName () {
-      this.$store.dispatch('selectHospitals', null).then(res => {
+      const tempSearch = {
+        name: '', // 名称查询
+        hospitalId: '', // 医院id
+        currentPage: 0, // 当前页码
+        totalCount: 0, // 默认数据总数
+        pageSize: 0 // 默认每页数据量
+      }
+      this.$store.dispatch('hospital/selectHospitals', tempSearch).then(res => {
         this.hospitalNames = res.data
       })
     },
-    getOfficeByHospitalId (currentPage, pagesize) {
-      this.$store.dispatch('selectOfficeHospitalId', this.search).then(res => {
-        this.hospitalNames = res.data
+    getOfficeByHospitalId () {
+      this.$store.dispatch('office/selectOfficeHospitalId', this.search).then(res => {
+        this.tableData = res.data
         this.search.totalCount = res.tatalNum
       })
     },
     handleSizeChange (val) {
       this.search.pageSize = val
-      this.getOfficeByHospitalId(this.search.currentPage, this.search.pageSize)
+      this.getOfficeByHospitalId()
     },
     handleCurrentChange (val) {
       this.search.currentPage = val
-      this.getOfficeByHospitalId(this.search.currentPage, this.search.pageSize)
+      this.getOfficeByHospitalId()
     }
   }
 }
