@@ -46,7 +46,10 @@ export default {
             message: '登录成功!'
           })
           this.$store.dispatch('admin/adminIn', res.data)
-         // this.$store.getters['admin/id']
+          this.$store.commit('SET_ID', res.data.id)
+          this.$store.commit('SET_NAME', res.data.name)
+          this.$store.commit('SET_TOKEN', res.token)
+          this.$store.commit('SET_TYPE', res.data.type)
           this.$router.push('/')
         } else {
           this.$message({

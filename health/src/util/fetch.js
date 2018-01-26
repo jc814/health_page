@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Qs from 'qs'
+import store from '../store/index.js'
 
 var service = axios.create({
   transformRequest: [function (data) {
@@ -7,11 +8,15 @@ var service = axios.create({
     return data
   }],
   baseURL: 'http://localhost:9090',
-  timeout: 5000
+  timeout: 120000
 })
 service.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 // 请求拦截器
 service.interceptors.request.use(function (config) {
+  config.data.tokenName = `${store.getters('admin/')}`
+  if (store.getters.token) {
+    config.headers.Authorization = `${store.getters.token}`
+  }
   return config
 }, function (error) {
   return Promise.reject(error)
