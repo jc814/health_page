@@ -130,9 +130,6 @@ export default {
       this.form = {}
       this.dialogVisible = true
     },
-    handleFilter () {
-      this.getHospitalList()
-    },
     handleEdit () {
       console.log(this.form)
       this.$store.dispatch('hospital/updateHospital', this.form).then(res => {
