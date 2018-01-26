@@ -3,7 +3,7 @@
     <div class="header">
       <el-row>
         <el-col :span="3">
-          <el-select v-model="search.hospitalId" filterable placeholder="请选择医院" v-if="type === 1" clearable
+          <el-select v-model="search.hid" filterable placeholder="请选择医院" v-if="type === 1" clearable
                      @change="getOfficeByHospitalId"
                      @clear="getOfficeByHospitalId">
             <el-option
@@ -51,16 +51,26 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="search.totalCount">
       </el-pagination>
-      <el-dialog :title="dialogTitle[dialogStatus]" :visible.sync="dialogVisible" width="40%" center>
+      <el-dialog :title="dialogTitle[dialogStatus]" :visible.sync="dialogVisible" width="25%" center>
         <el-form :model="form" label-width="100px">
           <el-form-item label="id：" v-if="dialogStatus === 'update'" >
             <el-input v-model="form.id" :disabled="true"/>
           </el-form-item>
-          <el-form-item label="所属医院：">
-            <el-input v-model="form.hospitalName"/>
+          <el-form-item label="所属医院：" v-if="type === 1">
+            <el-select v-model="form.hid" filterable placeholder="请选择医院">
+              <el-option
+                v-for="item in hospitalNames"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="科室名称：">
             <el-input v-model="form.name"/>
+          </el-form-item>
+          <el-form-item label="科室电话：">
+            <el-input v-model="form.phone"/>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -89,21 +99,22 @@ export default {
         id: '',
         hid: '',
         hospitalName: '',
-        name: ''
+        name: '',
+        phone: ''
       },
       search: {
         name: '', // 名称查询
-        hospitalId: '', // 医院id
+        hid: '', // 医院id
         currentPage: 1, // 当前页码
-        totalCount: 5, // 默认数据总数
-        pageSize: 2 // 默认每页数据量
+        totalCount: 1, // 默认数据总数
+        pageSize: 1 // 默认每页数据量
       },
       type: ''
     }
   },
   mounted () {
     this.type = this.$store.getters['admin/type']
-    this.search.hospitalId = this.$store.getters['admin/hospitalId']
+    this.search.hid = this.$store.getters['admin/hospitalId']
     if (this.type === 1) {
       this.getHospitalName()
     } else {
@@ -114,7 +125,7 @@ export default {
     getHospitalName () {
       const tempSearch = {
         name: '', // 名称查询
-        hospitalId: '', // 医院id
+        hid: '', // 医院id
         currentPage: 0, // 当前页码
         totalCount: 0, // 默认数据总数
         pageSize: 0 // 默认每页数据量
@@ -127,6 +138,83 @@ export default {
       this.$store.dispatch('office/selectOfficeHospitalId', this.search).then(res => {
         this.tableData = res.data
         this.search.totalCount = res.tatalNum
+      })
+    },
+    editDialog (index, row) {
+      this.form = Object.assign({}, row)
+      this.dialogStatus = 'update'
+      this.dialogVisible = true
+    },
+    addDialog () {
+      this.dialogStatus = 'create'
+      this.form = {}
+      this.dialogVisible = true
+    },
+    handleEdit () {
+      console.log(this.form)
+      this.$store.dispatch('hospital/updateHospital', this.form).then(res => {
+        if (res === 1) {
+          this.dialogVisible = false
+          this.getHospitalList()
+          this.$message({
+            type: 'success',
+            message: '编辑成功!'
+          })
+        } else {
+          this.getHospitalList()
+          this.$message({
+            type: 'error',
+            message: '编辑失败!'
+          })
+        }
+      })
+    },
+    handleAdd () {
+      this.$store.dispatch('hospital/insertHospital', this.form).then(res => {
+        if (res === 1) {
+          this.dialogVisible = false
+          this.$message({
+            type: 'success',
+            message: '添加成功!'
+          })
+          this.getHospitalList()
+        } else {
+          this.$message({
+            type: 'success',
+            message: '添加失败!'
+          })
+        }
+      })
+    },
+    handleDelete (index, row) {
+      this.$confirm('此操作将永久删除该医院, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        var param = {
+          id: ''
+        }
+        param.id = row.id
+        this.$store.dispatch('hospital/deleteHospital', param).then(res => {
+          if (res === 1) {
+            this.tableData.splice(index, 1)
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: '删除失败!'
+            })
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     handleSizeChange (val) {
