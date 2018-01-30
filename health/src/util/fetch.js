@@ -13,9 +13,8 @@ var service = axios.create({
 service.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 // 请求拦截器
 service.interceptors.request.use(function (config) {
-  config.data.tokenName = `${store.getters('admin/')}`
-  if (store.getters.token) {
-    config.headers.Authorization = `${store.getters.token}`
+  if (store.getters.token !== null && store.getters.token !== '') {
+    config.headers.token = `token ${store.state.token}`
   }
   return config
 }, function (error) {
