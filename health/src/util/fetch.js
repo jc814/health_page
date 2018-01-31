@@ -1,6 +1,7 @@
 import axios from 'axios'
 import Qs from 'qs'
-import store from 'store/index.js'
+
+var storage = window.sessionStorage
 
 var service = axios.create({
   transformRequest: [function (data) {
@@ -10,11 +11,12 @@ var service = axios.create({
   baseURL: 'http://localhost:9090',
   timeout: 120000
 })
+
 service.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 // 请求拦截器
 service.interceptors.request.use(function (config) {
-  if (store.getters.token !== null && store.getters.token !== '') {
-    config.headers.Authorization = `${store.state.token}`
+  if (storage.getItem('token') !== null && storage.getItem('token') !== '') {
+    config.headers.Authorization = storage.getItem('token')
   }
   return config
 }, function (error) {

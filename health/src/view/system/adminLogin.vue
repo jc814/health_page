@@ -30,6 +30,14 @@ export default {
       }
     }
   },
+  mounted: function () {
+    if (this.$router.query) {
+      this.$message({
+        type: 'error',
+        message: this.$route.query.code
+      })
+    }
+  },
   methods: {
     signIn () {
       if (this.form.name === '' || this.form.password === '') {
@@ -50,6 +58,13 @@ export default {
           this.$store.commit('SET_NAME', res.data.name)
           this.$store.commit('SET_TOKEN', res.token)
           this.$store.commit('SET_TYPE', res.data.type)
+          if (window.sessionStorage) {
+            var storage = window.sessionStorage
+            storage.setItem('id', res.data.id)
+            storage.setItem('name', res.data.name)
+            storage.setItem('token', res.token)
+            storage.setItem('type', res.data.type)
+          }
           this.$router.push('/')
         } else {
           this.$message({

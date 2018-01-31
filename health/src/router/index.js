@@ -22,6 +22,9 @@ export default new Router({
       path: '/',
       name: 'layout',
       component: layout,
+      meta: {
+        auth: true // 这里设置，当前路由需要校验
+      },
       children: [
         {
           path: '/',
@@ -62,11 +65,12 @@ export default new Router({
         }
       ]
     }, {
-      path: '/haha',
-      component: comment
-    }, {
       path: '/adminLogin',
       component: adminLogin
+    }, {
+      path: '*',
+      redirect: '/404',
+      hidden: true
     }
   ]
 })
