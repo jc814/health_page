@@ -1,4 +1,4 @@
-import fetch from '../../util/fetch'
+import fetch from 'util/fetch'
 
 const hospital = {
   // 定义状态

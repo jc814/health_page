@@ -1,4 +1,4 @@
-import fetch from '../../util/fetch'
+import fetch from 'util/fetch'
 
 const office = {
   // 定义状态

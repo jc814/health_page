@@ -1,8 +1,8 @@
 // store.js
 
-import hospital from './modules/hospital'
-import admin from './modules/admin'
-import office from './modules/office'
+import hospital from 'store/modules/hospital'
+import admin from 'store/modules/admin'
+import office from 'store/modules/office'
 import Vue from 'Vue'
 import Vuex from 'vuex'
 

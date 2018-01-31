@@ -1,6 +1,6 @@
 import axios from 'axios'
 import Qs from 'qs'
-import store from '../store/index.js'
+import store from 'store/index.js'
 
 var service = axios.create({
   transformRequest: [function (data) {
@@ -14,7 +14,7 @@ service.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencod
 // 请求拦截器
 service.interceptors.request.use(function (config) {
   if (store.getters.token !== null && store.getters.token !== '') {
-    config.headers.token = `token ${store.state.token}`
+    config.headers.Authorization = `${store.state.token}`
   }
   return config
 }, function (error) {
