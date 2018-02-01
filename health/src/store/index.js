@@ -3,6 +3,7 @@
 import hospital from 'store/modules/hospital'
 import admin from 'store/modules/admin'
 import office from 'store/modules/office'
+import doctor from 'store/modules/doctor'
 import Vue from 'Vue'
 import Vuex from 'vuex'
 
@@ -34,7 +35,8 @@ const store = new Vuex.Store({
   modules: {
     hospital,
     admin,
-    office
+    office,
+    doctor
   },
   getters: {
     id: state => { return state.id },
