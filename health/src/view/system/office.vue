@@ -98,7 +98,6 @@ export default {
       form: {
         id: '',
         hid: '',
-        hospitalName: '',
         name: '',
         phone: ''
       },
@@ -152,16 +151,16 @@ export default {
     },
     handleEdit () {
       console.log(this.form)
-      this.$store.dispatch('hospital/updateHospital', this.form).then(res => {
+      this.$store.dispatch('office/updateOffice', this.form).then(res => {
         if (res === 1) {
           this.dialogVisible = false
-          this.getHospitalList()
+          this.getOfficeByHospitalId()
           this.$message({
             type: 'success',
             message: '编辑成功!'
           })
         } else {
-          this.getHospitalList()
+          this.getOfficeByHospitalId()
           this.$message({
             type: 'error',
             message: '编辑失败!'
@@ -170,14 +169,14 @@ export default {
       })
     },
     handleAdd () {
-      this.$store.dispatch('hospital/insertHospital', this.form).then(res => {
+      this.$store.dispatch('office/insertOffice', this.form).then(res => {
         if (res === 1) {
           this.dialogVisible = false
           this.$message({
             type: 'success',
             message: '添加成功!'
           })
-          this.getHospitalList()
+          this.getOfficeByHospitalId()
         } else {
           this.$message({
             type: 'success',
@@ -196,7 +195,7 @@ export default {
           id: ''
         }
         param.id = row.id
-        this.$store.dispatch('hospital/deleteHospital', param).then(res => {
+        this.$store.dispatch('office/deleteOffice', param).then(res => {
           if (res === 1) {
             this.tableData.splice(index, 1)
             this.$message({

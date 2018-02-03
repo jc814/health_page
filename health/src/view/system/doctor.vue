@@ -3,9 +3,9 @@
     <div class="header">
       <el-row>
         <el-col :span="3">
-          <el-select v-model="search.hid" filterable placeholder="请选择医院" v-if="type === 1" clearable
+          <el-select v-model="search.hid" filterable placeholder="请选择医院" v-if="type === '1'" clearable
                      @change="getOfficeNameByHospitalId"
-                     @clear="clearAll">
+                     @clear="clearHId">
             <el-option
               v-for="item in hospitalNames"
               :key="item.id"
@@ -15,9 +15,9 @@
           </el-select>
         </el-col>
         <el-col :span="3">
-          <el-select v-model="search.oid" filterable placeholder="请选择科室" clearable
-                     @change="getDoctorByOfficeId"
-                     @clear="getDoctorByOfficeId">
+          <el-select v-model="search.oid" filterable placeholder="请选择科室" clearable :disabled="search.hid === ''"
+                     @clear="clearOId"
+                     @focus="checkforOffice">
             <el-option
               v-for="item in officeNames"
               :key="item.id"
@@ -28,7 +28,7 @@
         </el-col>
         <el-col :span="4">
           <el-input placeholder="请输入医生姓名" clearable>
-            <el-button slot="append" @click="">搜索</el-button>
+            <el-button slot="append" @click="searchDotors">搜索</el-button>
           </el-input>
         </el-col>
         <el-col :span="2" :offset="1">
@@ -40,8 +40,6 @@
       <el-table :data="tableData" border stripe>
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="id" label="id" sortable >
-        </el-table-column>
-        <el-table-column prop="hospitalName" label="所属医院">
         </el-table-column>
         <el-table-column prop="officeName" label="所属科室">
         </el-table-column>
@@ -68,18 +66,18 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="search.currentPage"
-        :page-sizes="[1, 2, 3, 4]"
+        :page-sizes="[10, 20, 50, 100]"
         :page-size="search.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="search.totalCount">
       </el-pagination>
       <el-dialog :title="dialogTitle[dialogStatus]" :visible.sync="dialogVisible" width="25%" center>
-        <el-form :model="form" label-width="100px">
+        <el-form :model="form" label-width="100px" label-position="left">
           <el-form-item label="id：" v-if="dialogStatus === 'update'" >
             <el-input v-model="form.id" :disabled="true"/>
           </el-form-item>
-          <el-form-item label="所属医院：" v-if="type === 1">
-            <el-select v-model="form.hid" filterable placeholder="请选择科室">
+          <el-form-item label="所属科室：">
+            <el-select v-model="form.oid" filterable placeholder="请选择科室">
               <el-option
                 v-for="item in officeNames"
                 :key="item.id"
@@ -92,13 +90,19 @@
             <el-input v-model="form.name"/>
           </el-form-item>
           <el-form-item label="性别：">
-            <el-input v-model="form.sex"/>
+            <el-radio-group v-model="form.sex">
+              <el-radio label="1">男</el-radio>
+              <el-radio label="0">女</el-radio>
+            </el-radio-group>
           </el-form-item>
           <el-form-item label="年龄：">
             <el-input v-model="form.age"/>
           </el-form-item>
           <el-form-item label="简介：">
-            <el-input v-model="form.brief"/>
+            <el-input type="textarea"
+                      :autosize="{ minRows: 2, maxRows: 9}"
+                      v-model="form.brief">
+            </el-input>
           </el-form-item>
           <el-form-item label="电话：">
             <el-input v-model="form.phone"/>
@@ -141,20 +145,20 @@
           hid: '', // 医院id
           oid: '', // 科室id
           currentPage: 1, // 当前页码
-          totalCount: 1, // 默认数据总数
-          pageSize: 1 // 默认每页数据量
+          totalCount: 10, // 默认数据总数
+          pageSize: 10 // 默认每页数据量
         },
-        type: ''
+        type: '',
+        options: []
       }
     },
     mounted () {
-      this.type = this.$store.getters['admin/type']
-      if (this.type === 1) {
+      this.type = window.sessionStorage.getItem('type')
+      if (this.type === '1') {
         this.getHospitalName()
       } else {
-        this.search.hid = this.$store.getters['admin/hospitalId']
+        this.search.hid = window.sessionStorage.getItem('hid')
         this.getOfficeNameByHospitalId()
-        this.getDoctorByOfficeId ()
       }
     },
     methods: {
@@ -171,15 +175,15 @@
         })
       },
       getOfficeNameByHospitalId () {
-        if (this.hid === '') {
-          this.$message({
-            type: 'warning',
-            message: '请先选择医院!'
-          })
-          return
+        var tempHid
+        this.search.oid = ''
+        if (window.sessionStorage.getItem('type') === '1') {
+          tempHid = this.search.hid
+        } else {
+          tempHid = window.sessionStorage.getItem('type')
         }
         const tempSearch = {
-          hid: '', // 医院id
+          hid: tempHid, // 医院id
           currentPage: 0, // 当前页码
           pageSize: 0 // 默认每页数据量
         }
@@ -187,16 +191,27 @@
           this.officeNames = res.data
         })
       },
-      getDoctorByOfficeId () {
-        this.$store.dispatch('doctor/selectDoctorByOfficeId', this.search).then(res => {
+      searchDotors () {
+        this.$store.dispatch('doctor/selectDoctors', this.search).then(res => {
           this.tableData = res.data
           this.search.totalCount = res.tatalNum
         })
       },
-      clearAll () {
-        this.tableData = []
-        this.hospitalNames = []
+      clearHId () {
         this.officeNames = []
+        this.tableData = []
+        this.search.oid = ''
+      },
+      clearOId () {
+        this.tableData = []
+      },
+      checkforOffice () {
+        if (!this.search.hid) {
+          this.$message({
+            type: 'warning',
+            message: '请先选择医院!'
+          })
+        }
       },
       editDialog (index, row) {
         this.form = Object.assign({}, row)
@@ -213,13 +228,12 @@
         this.$store.dispatch('doctor/updateDoctor', this.form).then(res => {
           if (res === 1) {
             this.dialogVisible = false
-            this.getHospitalList()
+            this.searchDotors()
             this.$message({
               type: 'success',
               message: '编辑成功!'
             })
           } else {
-            this.getHospitalList()
             this.$message({
               type: 'error',
               message: '编辑失败!'
@@ -235,7 +249,7 @@
               type: 'success',
               message: '添加成功!'
             })
-            this.getHospitalList()
+            this.searchDotors()
           } else {
             this.$message({
               type: 'success',
@@ -261,6 +275,7 @@
                 type: 'success',
                 message: '删除成功!'
               })
+              this.searchDotors()
             } else {
               this.$message({
                 type: 'error',
@@ -277,11 +292,11 @@
       },
       handleSizeChange (val) {
         this.search.pageSize = val
-        this.getOfficeByHospitalId()
+        this.searchDotors()
       },
       handleCurrentChange (val) {
         this.search.currentPage = val
-        this.getOfficeByHospitalId()
+        this.searchDotors()
       }
     }
   }

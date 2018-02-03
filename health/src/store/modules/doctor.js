@@ -4,11 +4,11 @@ const doctor = {
   // 定义状态
   namespaced: true,
   actions: {
-    selectDoctorByOfficeId ({commit}, param) {
-      return fetch.commonApi('/doctor/selectOfficeHospitalId', param)
+    selectDoctors ({commit}, param) {
+      return fetch.commonApi('/doctor/selectAllRecord', param)
     },
     updateDoctor ({commit}, param) {
-      return fetch.commonApi('/doctor/updateRecord', param)
+      return fetch.commonApi('/doctor/updateRecordById', param)
     },
     insertDoctor ({commit}, param) {
       return fetch.commonApi('/doctor/insertRecord', param)

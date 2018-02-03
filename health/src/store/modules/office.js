@@ -8,7 +8,7 @@ const office = {
       return fetch.commonApi('/office/selectOfficeHospitalId', param)
     },
     updateOffice ({commit}, param) {
-      return fetch.commonApi('/office/updateRecord', param)
+      return fetch.commonApi('/office/updateRecordById', param)
     },
     insertOffice ({commit}, param) {
       return fetch.commonApi('/office/insertRecord', param)
