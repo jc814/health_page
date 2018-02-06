@@ -28,9 +28,12 @@ new Vue({
   components: { App }
 })
 router.beforeEach((to, from, next) => {
-  if (store.getters.token || window.sessionStorage.token) {
+  if (to.path === '/adminLogin') {
+    next()
+  }
+  if (window.sessionStorage.token) {
     if (to.matched.some(record => record.meta.auth)) {
-      if (window.sessionStorage.type === '1' || window.sessionStorage.type === '0') {
+      if (window.sessionStorage.type === '1') {
         next()
       } else {
         next({path: '/adminLogin', query: {code: '402'}})

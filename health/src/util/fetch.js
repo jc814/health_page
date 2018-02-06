@@ -24,6 +24,10 @@ service.interceptors.request.use(function (config) {
 })
 // 响应拦截器
 service.interceptors.response.use(function (response) {
+  const res = response.data
+  if (!res.success) {
+    code
+  }
   return response
 }, function (error) {
   return Promise.reject(error)

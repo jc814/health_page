@@ -44,7 +44,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="search.currentPage"
-        :page-sizes="[1, 2, 3, 4]"
+        :page-sizes="[10, 20, 50, 100]"
         :page-size="search.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="search.totalCount">
@@ -103,8 +103,8 @@ export default {
       search: {
         name: '', // 名称查询
         currentPage: 1, // 当前页码
-        totalCount: 1000, // 默认数据总数
-        pageSize: 2 // 默认每页数据量
+        totalCount: 10, // 默认数据总数
+        pageSize: 10 // 默认每页数据量
       },
       tableData: []
     }

@@ -61,7 +61,7 @@ export default {
           if (window.sessionStorage) {
             var storage = window.sessionStorage
             storage.setItem('id', res.data.id)
-            storage.setItem('hid', res.data.hid)
+            storage.setItem('hid', res.data.hid === null ? '' : res.data.hid)
             storage.setItem('name', res.data.name)
             storage.setItem('token', res.token)
             storage.setItem('type', res.data.type)

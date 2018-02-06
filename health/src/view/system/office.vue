@@ -3,7 +3,7 @@
     <div class="header">
       <el-row>
         <el-col :span="3">
-          <el-select v-model="search.hid" filterable placeholder="请选择医院" v-if="type === 1" clearable
+          <el-select v-model="search.hid" filterable placeholder="请选择医院" v-if="type === '1'" clearable
                      @change="getOfficeByHospitalId"
                      @clear="getOfficeByHospitalId">
             <el-option
@@ -46,7 +46,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="search.currentPage"
-        :page-sizes="[1, 2, 3, 4]"
+        :page-sizes="[10, 20, 50, 100]"
         :page-size="search.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="search.totalCount">
@@ -105,16 +105,16 @@ export default {
         name: '', // 名称查询
         hid: '', // 医院id
         currentPage: 1, // 当前页码
-        totalCount: 1, // 默认数据总数
-        pageSize: 1 // 默认每页数据量
+        totalCount: 10, // 默认数据总数
+        pageSize: 10 // 默认每页数据量
       },
       type: ''
     }
   },
   mounted () {
-    this.type = this.$store.getters['admin/type']
-    this.search.hid = this.$store.getters['admin/hospitalId']
-    if (this.type === 1) {
+    this.type = window.sessionStorage.getItem('type')
+    this.search.hid = window.sessionStorage.getItem('hid')
+    if (this.type === '1') {
       this.getHospitalName()
     } else {
       this.getOfficeByHospitalId()
