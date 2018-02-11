@@ -30,7 +30,13 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-
+    loginOut ({commit}) {
+      commit('SET_ID', null)
+      commit('SET_NAME', null)
+      commit('SET_TOKEN', null)
+      commit('SET_TYPE', null)
+      window.sessionStorage.clear()
+    }
   },
   modules: {
     hospital,

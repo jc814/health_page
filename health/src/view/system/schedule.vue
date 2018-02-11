@@ -1,16 +1,289 @@
 <template>
-  <div>
-    班次
+  <div class="content">
+    <div class="header">
+      <el-row>
+        <el-col :span="3">
+          <el-select v-model="search.hid" filterable placeholder="请选择医院" v-if="type === '1'" clearable
+                     @change=""
+                     @clear="">
+            <el-option
+              v-for="item in hospitalNames"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="4">
+          <el-input placeholder="请输入班次名称" clearable>
+            <el-button slot="append" @click="searchSchedule">搜索</el-button>
+          </el-input>
+        </el-col>
+        <el-col :span="2" :offset="1">
+          <el-button type="primary" @click="addDialog()">添加</el-button>
+        </el-col>
+      </el-row>
+    </div>
+    <div>
+      <el-table :data="tableData" border stripe>
+        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column prop="id" label="id" sortable >
+        </el-table-column>
+        <el-table-column prop="hispotalName" label="所属医院">
+        </el-table-column>
+        <el-table-column prop="name" label="班次名称">
+        </el-table-column>
+        <el-table-column prop="timeCount" label="时间段个数">
+        </el-table-column>
+        <el-table-column prop="inUse" label="是否被使用">
+        </el-table-column>
+        <el-table-column label="操作" width="180">
+          <template slot-scope="scope">
+            <el-button size="small"
+                       @click="editDialog(scope.$index, scope.row)">编辑</el-button>
+            <el-button size="small" type="danger"
+                       @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="search.currentPage"
+        :page-sizes="[10, 20, 50, 100]"
+        :page-size="search.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="search.totalCount">
+      </el-pagination>
+      <el-dialog :title="dialogTitle[dialogStatus]" :visible.sync="dialogVisible" width="30%" center>
+        <el-form :model="form" label-width="100px" label-position="left" ref="formData">
+          <el-form-item label="id：" v-if="dialogStatus === 'update'" prop="id">
+            <el-input v-model="form.id" :disabled="true"/>
+          </el-form-item>
+          <el-form-item label="名称：" prop="name">
+            <el-input v-model="form.name"/>
+          </el-form-item>
+          <el-form-item label="工作日：" prop="days">
+            <el-checkbox-group v-model="form.days"  size="small">
+              <el-checkbox-button label="周一" ></el-checkbox-button>
+              <el-checkbox-button label="周二" ></el-checkbox-button>
+              <el-checkbox-button label="周三" ></el-checkbox-button>
+              <el-checkbox-button label="周四" ></el-checkbox-button>
+              <el-checkbox-button label="周五" ></el-checkbox-button>
+              <el-checkbox-button label="周六" ></el-checkbox-button>
+              <el-checkbox-button label="周日" ></el-checkbox-button>
+            </el-checkbox-group>
+          </el-form-item>
+          <el-form-item label="时间段：" prop="selectCount">
+            <el-select v-model="form.selectCount" placeholder="请选择时间段个数"
+                       @change="changeCount"
+                       @clear="clearTime"
+                       size="small">
+              <el-option label="1" value="1"></el-option>
+              <el-option label="2" value="2"></el-option>
+              <el-option label="3" value="3"></el-option>
+              <el-option label="4" value="4"></el-option>
+              <el-option label="5" value="5"></el-option>
+            </el-select>
+            <div v-for="n in parseInt(form.selectCount)">
+              <el-col :span="10">
+                <el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.times[n-1].startTime" style="width: 100%;" size="small"></el-time-picker>
+              </el-col>
+              <el-col class="line" :span="1">&nbsp;--&nbsp;</el-col>
+              <el-col :span="10">
+                <el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.times[n-1].endTime" style="width: 100%;" size="small"></el-time-picker>
+              </el-col>
+            </div>
+            <!--<el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker>
+            <el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker>-->
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button v-if="this.dialogStatus === 'update'" type="primary" @click="handleEdit()">确 定</el-button>
+          <el-button v-else type="primary" @click="handleAdd()">确 定</el-button>
+        </span>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
 <script>
-export default {
+  export default {
+    data () {
+      return {
+        dialogStatus: '',
+        dialogVisible: false,
+        dialogTitle: {
+          update: '编辑面板',
+          create: '新增面板'
+        },
+        tableData: [],
+        hospitalNames: [],
+        form: {
+          id: '',
+          days: [],
+          name: '',
+          selectCount: 3,
+          times: [
+            {
+              starTime: '',
+              endTime: ''
+            }
+          ]
+        },
+        search: {
+          name: '', // 名称查询
+          hid: '', // 医院id
+          oid: '', // 科室id
+          currentPage: 1, // 当前页码
+          totalCount: 10, // 默认数据总数
+          pageSize: 10 // 默认每页数据量
+        },
+        type: '',
+        options: []
+      }
+    },
+    mounted () {
+      this.type = window.sessionStorage.getItem('type')
+      if (this.type === '1') {
+        this.getHospitalName()
+      } else {
+        this.search.hid = window.sessionStorage.getItem('hid')
+      }
+    },
+    methods: {
+      getHospitalName () {
+        const tempSearch = {
+          name: '', // 名称查询
+          hid: '', // 医院id
+          currentPage: 0, // 当前页码
+          totalCount: 0, // 默认数据总数
+          pageSize: 0 // 默认每页数据量
+        }
+        this.$store.dispatch('hospital/selectHospitals', tempSearch).then(res => {
+          this.hospitalNames = res.data
+        })
+      },
+      searchSchedule () {
 
-}
+      },
+      addTime () {
+
+      },
+      changeCount () {
+        var count = this.form.selectCount
+        this.form.times = []
+        for (var i = 0; i < count; i++) {
+          var tempTimes = {
+            startTime: '',
+            endTime: ''
+          }
+          this.form.times.push(tempTimes)
+        }
+      },
+      clearTime () {
+
+      },
+      editDialog (index, row) {
+        this.form = Object.assign({}, row)
+        this.dialogStatus = 'update'
+        this.dialogVisible = true
+      },
+      addDialog () {
+        this.dialogStatus = 'create'
+        this.$nextTick(function () {
+          this.$refs.formData.resetFields()
+        })
+        this.dialogVisible = true
+      },
+      handleEdit () {
+        console.log(this.form)
+        this.$store.dispatch('doctor/updateDoctor', this.form).then(res => {
+          if (res === 1) {
+            this.dialogVisible = false
+            this.searchSchedule()
+            this.$message({
+              type: 'success',
+              message: '编辑成功!'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: '编辑失败!'
+            })
+          }
+        })
+      },
+      handleAdd () {
+        this.$store.dispatch('doctor/insertDoctor', this.form).then(res => {
+          if (res === 1) {
+            this.dialogVisible = false
+            this.$message({
+              type: 'success',
+              message: '添加成功!'
+            })
+            this.searchSchedule()
+          } else {
+            this.$message({
+              type: 'success',
+              message: '添加失败!'
+            })
+          }
+        })
+      },
+      handleDelete (index, row) {
+        this.$confirm('此操作将永久删除该医院, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          var param = {
+            id: ''
+          }
+          param.id = row.id
+          this.$store.dispatch('doctor/deleteDoctor', param).then(res => {
+            if (res === 1) {
+              this.tableData.splice(index, 1)
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.searchSchedule()
+            } else {
+              this.$message({
+                type: 'error',
+                message: '删除失败!'
+              })
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+      },
+      handleSizeChange (val) {
+        this.search.pageSize = val
+        this.searchSchedule()
+      },
+      handleCurrentChange (val) {
+        this.search.currentPage = val
+        this.searchSchedule()
+      }
+    }
+  }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+  .content{
+    padding: 20px;
+  }
+  .header{
+    margin-bottom: 30px;
+  }
 </style>
+
+
