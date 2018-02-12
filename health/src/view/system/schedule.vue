@@ -65,13 +65,13 @@
           </el-form-item>
           <el-form-item label="工作日：" prop="days">
             <el-checkbox-group v-model="form.days"  size="small">
-              <el-checkbox-button label="周一" ></el-checkbox-button>
-              <el-checkbox-button label="周二" ></el-checkbox-button>
-              <el-checkbox-button label="周三" ></el-checkbox-button>
-              <el-checkbox-button label="周四" ></el-checkbox-button>
-              <el-checkbox-button label="周五" ></el-checkbox-button>
-              <el-checkbox-button label="周六" ></el-checkbox-button>
-              <el-checkbox-button label="周日" ></el-checkbox-button>
+              <el-checkbox-button label="1">周一</el-checkbox-button>
+              <el-checkbox-button label="2">周二</el-checkbox-button>
+              <el-checkbox-button label="3">周三</el-checkbox-button>
+              <el-checkbox-button label="4">周四</el-checkbox-button>
+              <el-checkbox-button label="5">周五</el-checkbox-button>
+              <el-checkbox-button label="6">周六</el-checkbox-button>
+              <el-checkbox-button label="7">周日</el-checkbox-button>
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="时间段：" prop="selectCount">
@@ -124,7 +124,7 @@
           id: '',
           days: [],
           name: '',
-          selectCount: 3,
+          selectCount: 1,
           times: [
             {
               starTime: '',
