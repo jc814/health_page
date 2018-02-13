@@ -29,29 +29,35 @@ service.interceptors.request.use(function (config) {
 service.interceptors.response.use(function (response) {
   const code = response.data
   var message = ''
+  var flag = false
   if (!code.success) {
     switch (code.errorCode) {
       case 6001:
         message = '您未登录，请登录后再操作'
+        flag = true
         break
       case 6002:
         message = '非法身份信息，请登录后再操作'
+        flag = true
         break
       case 6003:
         message = '会话过期，请重新登录'
+        flag = true
         break
       default:
-        message = '未知异常，请联系管理员，请重新登录'
+        message = '未知异常，请联系管理员'
     }
-    MessageBox.confirm(message, '确定登出', {
-      confirmButtonText: '重新登录',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }).then(() => {
-      store.dispatch('loginOut').then(() => {
-        router.push('adminLogin')
+    if (flag) {
+      MessageBox.confirm(message, '确定登出', {
+        confirmButtonText: '重新登录',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        store.dispatch('loginOut').then(() => {
+          router.push('adminLogin')
+        })
       })
-    })
+    }
   }
   return response
 }, function (error) {

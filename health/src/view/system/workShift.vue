@@ -109,6 +109,8 @@
 </template>
 
 <script>
+  import character from 'util/character'
+  import dateFormat from 'util/DateFormat'
   export default {
     data () {
       return {
@@ -199,7 +201,7 @@
       },
       handleEdit () {
         console.log(this.form)
-        this.$store.dispatch('doctor/updateDoctor', this.form).then(res => {
+        this.$store.dispatch('workShift/updateRecord', this.form).then(res => {
           if (res === 1) {
             this.dialogVisible = false
             this.searchSchedule()
@@ -216,7 +218,27 @@
         })
       },
       handleAdd () {
-        this.$store.dispatch('doctor/insertDoctor', this.form).then(res => {
+        var tempForm = {
+          id: '',
+          name: '',
+          times: '',
+          days: ''
+        }
+        tempForm.id = this.form.id
+        tempForm.name = this.form.name
+        var times = ''
+        var days = ''
+        for (var i = 0; i < this.form.days.length; i++) {
+          days += ',' + this.form.days[i]
+        }
+        for (var j = 0; j < this.form.times.length; j++) {
+          times += ',' + dateFormat.hourToSecond(this.form.times[j].startTime)
+          times += ',' + dateFormat.hourToSecond(this.form.times[j].endTime)
+        }
+
+        tempForm.days = character.commasRemove(days)
+        tempForm.times = character.commasRemove(times)
+        this.$store.dispatch('workShift/insertWorkShift', tempForm).then(res => {
           if (res === 1) {
             this.dialogVisible = false
             this.$message({
@@ -242,7 +264,7 @@
             id: ''
           }
           param.id = row.id
-          this.$store.dispatch('doctor/deleteDoctor', param).then(res => {
+          this.$store.dispatch('workShift/deleteRecord', param).then(res => {
             if (res === 1) {
               this.tableData.splice(index, 1)
               this.$message({

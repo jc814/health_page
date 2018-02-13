@@ -7,8 +7,8 @@ import bespeakLook from 'view/system/bespeakLook'
 import doctor from 'view/system/doctor'
 import hospital from 'view/system/hospital'
 import office from 'view/system/office'
-import schedule from 'view/system/schedule'
-import scheduleArrange from 'view/system/scheduleArrange'
+import workShift from 'view/system/workShift'
+import workShiftManage from 'view/system/workShiftManage'
 import comment from 'demo/comment'
 import map from 'demo/map'
 import table from 'demo/table'
@@ -48,11 +48,11 @@ export default new Router({
           path: '/office',
           component: office
         }, {
-          path: '/schedule',
-          component: schedule
+          path: '/workShift',
+          component: workShift
         }, {
-          path: '/scheduleArrange',
-          component: scheduleArrange
+          path: '/workShiftManage',
+          component: workShiftManage
         }, {
           path: '/comment',
           component: comment

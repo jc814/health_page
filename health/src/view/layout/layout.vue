@@ -68,10 +68,10 @@ export default {
           name: '作息管理',
           subs: [
             {
-              index: 'schedule',
+              index: 'workShift',
               name: '班次管理'
             }, {
-              index: 'scheduleArrange',
+              index: 'workShiftManage',
               name: '排班管理'
             }
           ]
