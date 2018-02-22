@@ -56,7 +56,7 @@
           <el-form-item label="id：" v-if="dialogStatus === 'update'" >
             <el-input v-model="form.id" :disabled="true"/>
           </el-form-item>
-          <el-form-item label="所属医院：" v-if="type === 1">
+          <el-form-item label="所属医院：" v-if="type === '1'">
             <el-select v-model="form.hid" filterable placeholder="请选择医院">
               <el-option
                 v-for="item in hospitalNames"

@@ -167,8 +167,11 @@
           this.hospitalNames = res.data
         })
       },
-      searchSchedule () {
-
+      searchWorkShift () {
+        this.$store.dispatch('workShift/selectWorkShift', this.search).then(res => {
+          this.tableData = res.data
+          this.search.totalCount = res.number
+        })
       },
       addTime () {
 

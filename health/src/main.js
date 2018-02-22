@@ -33,7 +33,7 @@ router.beforeEach((to, from, next) => {
   }
   if (window.sessionStorage.token) {
     if (to.matched.some(record => record.meta.auth)) {
-      if (window.sessionStorage.type === '1') {
+      if (window.sessionStorage.type === '1' || window.sessionStorage.type === '0') {
         next()
       } else {
         next({path: '/adminLogin', query: {code: '402'}})

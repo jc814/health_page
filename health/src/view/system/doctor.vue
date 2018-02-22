@@ -180,7 +180,7 @@
         if (window.sessionStorage.getItem('type') === '1') {
           tempHid = this.search.hid
         } else {
-          tempHid = window.sessionStorage.getItem('type')
+          tempHid = window.sessionStorage.getItem('hid')
         }
         const tempSearch = {
           hid: tempHid, // 医院id
