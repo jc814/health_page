@@ -16,11 +16,11 @@
         </el-col>
         <el-col :span="4">
           <el-input placeholder="请输入班次名称" clearable>
-            <el-button slot="append" @click="searchSchedule">搜索</el-button>
+            <el-button slot="append" @click="searchWorkShift()">搜索</el-button>
           </el-input>
         </el-col>
         <el-col :span="2" :offset="1">
-          <el-button type="primary" @click="addDialog()">添加</el-button>
+          <el-button type="primary" @click="addDialog()" v-if="type === '0'">添加</el-button>
         </el-col>
       </el-row>
     </div>
@@ -29,11 +29,19 @@
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="id" label="id" sortable >
         </el-table-column>
-        <el-table-column prop="hispotalName" label="所属医院">
+        <el-table-column prop="hispotalName" label="所属医院"  v-if="type === '1'">
         </el-table-column>
         <el-table-column prop="name" label="班次名称">
         </el-table-column>
-        <el-table-column prop="timeCount" label="时间段个数">
+        <el-table-column prop="scheduleCount" label="时间段个数">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top" width="250">
+              <p v-for="schedule in scope.row.schedules">{{ timeFormat(schedule.startTime) }}&nbsp;&nbsp;至&nbsp;&nbsp;{{ timeFormat(schedule.endTime) }}</p>
+              <div slot="reference" class="name-wrapper">
+                <el-tag size="medium">{{ scope.row.scheduleCount }}</el-tag>
+              </div>
+            </el-popover>
+          </template>
         </el-table-column>
         <el-table-column prop="inUse" label="是否被使用">
         </el-table-column>
@@ -94,8 +102,6 @@
                 <el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.times[n-1].endTime" style="width: 100%;" size="small"></el-time-picker>
               </el-col>
             </div>
-            <!--<el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker>
-            <el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker>-->
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -137,7 +143,6 @@
         search: {
           name: '', // 名称查询
           hid: '', // 医院id
-          oid: '', // 科室id
           currentPage: 1, // 当前页码
           totalCount: 10, // 默认数据总数
           pageSize: 10 // 默认每页数据量
@@ -153,6 +158,7 @@
       } else {
         this.search.hid = window.sessionStorage.getItem('hid')
       }
+      this.searchWorkShift()
     },
     methods: {
       getHospitalName () {
@@ -170,7 +176,7 @@
       searchWorkShift () {
         this.$store.dispatch('workShift/selectWorkShift', this.search).then(res => {
           this.tableData = res.data
-          this.search.totalCount = res.number
+          this.search.totalCount = res.tatalNum
         })
       },
       addTime () {
@@ -192,6 +198,39 @@
       },
       editDialog (index, row) {
         this.form = Object.assign({}, row)
+        this.form.selectCount = this.form.scheduleCount
+        this.form.times = []
+        for (var i = 0; i < this.form.schedules.length; i++) {
+          var temp = {
+            startTime: '',
+            endTime: ''
+          }
+          temp.startTime = new Date(this.form.schedules[i].startTime)
+          temp.endTime = new Date(this.form.schedules[i].endTime)
+          this.form.times.push(temp)
+        }
+        this.form.days = []
+        if (this.form.sun === 1) {
+          this.form.days.push('7')
+        }
+        if (this.form.mon === 1) {
+          this.form.days.push('1')
+        }
+        if (this.form.tue === 1) {
+          this.form.days.push('2')
+        }
+        if (this.form.wed === 1) {
+          this.form.days.push('3')
+        }
+        if (this.form.thu === 1) {
+          this.form.days.push('4')
+        }
+        if (this.form.fri === 1) {
+          this.form.days.push('5')
+        }
+        if (this.form.sat === 1) {
+          this.form.days.push('6')
+        }
         this.dialogStatus = 'update'
         this.dialogVisible = true
       },
@@ -291,11 +330,15 @@
       },
       handleSizeChange (val) {
         this.search.pageSize = val
-        this.searchSchedule()
+        this.searchWorkShift()
       },
       handleCurrentChange (val) {
         this.search.currentPage = val
-        this.searchSchedule()
+        this.searchWorkShift()
+      },
+      timeFormat (target) {
+        var time = new Date(target)
+        return time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds()
       }
     }
   }

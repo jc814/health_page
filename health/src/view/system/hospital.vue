@@ -116,7 +116,7 @@ export default {
     getHospitalList (currentPage, pagesize) {
       this.$store.dispatch('hospital/selectHospitals', this.search).then(res => {
         this.tableData = res.data
-        this.search.totalCount = res.number
+        this.search.totalCount = res.tatalNum
         console.log('调用封装后的axios成功')
       })
     },

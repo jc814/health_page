@@ -5,7 +5,7 @@ const workShift = {
   namespaced: true,
   actions: {
     selectWorkShift ({commit}, param) {
-      return fetch.commonApi('/workShift/selectRecord', param)
+      return fetch.commonApi('/workShift/selectAllRecord', param)
     },
     updateWorkShift ({commit}, param) {
       return fetch.commonApi('/workShift/updateRecordById', param)
