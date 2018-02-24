@@ -197,8 +197,10 @@
 
       },
       editDialog (index, row) {
-        this.form = Object.assign({}, row)
-        this.form.selectCount = this.form.scheduleCount
+        this.form.schedules = row.schedules
+        this.form.id = row.id
+        this.form.name = row.name
+        this.form.selectCount = row.scheduleCount.toString()
         this.form.times = []
         for (var i = 0; i < this.form.schedules.length; i++) {
           var temp = {
@@ -210,25 +212,25 @@
           this.form.times.push(temp)
         }
         this.form.days = []
-        if (this.form.sun === 1) {
+        if (row.sun === 1) {
           this.form.days.push('7')
         }
-        if (this.form.mon === 1) {
+        if (row.mon === 1) {
           this.form.days.push('1')
         }
-        if (this.form.tue === 1) {
+        if (row.tue === 1) {
           this.form.days.push('2')
         }
-        if (this.form.wed === 1) {
+        if (row.wed === 1) {
           this.form.days.push('3')
         }
-        if (this.form.thu === 1) {
+        if (row.thu === 1) {
           this.form.days.push('4')
         }
-        if (this.form.fri === 1) {
+        if (row.fri === 1) {
           this.form.days.push('5')
         }
-        if (this.form.sat === 1) {
+        if (row.sat === 1) {
           this.form.days.push('6')
         }
         this.dialogStatus = 'update'
