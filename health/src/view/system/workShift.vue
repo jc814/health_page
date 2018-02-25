@@ -45,12 +45,14 @@
         </el-table-column>
         <el-table-column prop="inUse" label="是否被使用">
         </el-table-column>
-        <el-table-column label="操作" width="180">
+        <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button size="small"
                        @click="editDialog(scope.$index, scope.row)">编辑</el-button>
             <el-button size="small" type="danger"
                        @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            <el-button size="small" type="warning"
+                       @click="handleManage(scope.$index, scope.row)">安排人员</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -109,6 +111,9 @@
           <el-button v-if="this.dialogStatus === 'update'" type="primary" @click="handleEdit()">确 定</el-button>
           <el-button v-else type="primary" @click="handleAdd()">确 定</el-button>
         </span>
+      </el-dialog>
+      <el-dialog :title="请选择人员" :visible.sync="false" width="30%" center>
+
       </el-dialog>
     </div>
   </div>
@@ -243,12 +248,15 @@
         })
         this.dialogVisible = true
       },
+      manageDialog () {
+
+      },
       handleEdit () {
-        console.log(this.form)
-        this.$store.dispatch('workShift/updateRecord', this.form).then(res => {
+        var tempForm = this.workShiftInstall()
+        this.$store.dispatch('workShift/updateWorkShift', tempForm).then(res => {
           if (res === 1) {
             this.dialogVisible = false
-            this.searchSchedule()
+            this.searchWorkShift()
             this.$message({
               type: 'success',
               message: '编辑成功!'
@@ -262,26 +270,7 @@
         })
       },
       handleAdd () {
-        var tempForm = {
-          id: '',
-          name: '',
-          times: '',
-          days: ''
-        }
-        tempForm.id = this.form.id
-        tempForm.name = this.form.name
-        var times = ''
-        var days = ''
-        for (var i = 0; i < this.form.days.length; i++) {
-          days += ',' + this.form.days[i]
-        }
-        for (var j = 0; j < this.form.times.length; j++) {
-          times += ',' + dateFormat.hourToSecond(this.form.times[j].startTime)
-          times += ',' + dateFormat.hourToSecond(this.form.times[j].endTime)
-        }
-
-        tempForm.days = character.commasRemove(days)
-        tempForm.times = character.commasRemove(times)
+        var tempForm = this.workShiftInstall()
         this.$store.dispatch('workShift/insertWorkShift', tempForm).then(res => {
           if (res === 1) {
             this.dialogVisible = false
@@ -289,7 +278,7 @@
               type: 'success',
               message: '添加成功!'
             })
-            this.searchSchedule()
+            this.searchWorkShift()
           } else {
             this.$message({
               type: 'success',
@@ -299,7 +288,7 @@
         })
       },
       handleDelete (index, row) {
-        this.$confirm('此操作将永久删除该医院, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该班次, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -308,14 +297,14 @@
             id: ''
           }
           param.id = row.id
-          this.$store.dispatch('workShift/deleteRecord', param).then(res => {
+          this.$store.dispatch('workShift/deleteWorkShift', param).then(res => {
             if (res === 1) {
               this.tableData.splice(index, 1)
               this.$message({
                 type: 'success',
                 message: '删除成功!'
               })
-              this.searchSchedule()
+              this.searchWorkShift()
             } else {
               this.$message({
                 type: 'error',
@@ -338,10 +327,36 @@
         this.search.currentPage = val
         this.searchWorkShift()
       },
+      handleManage () {
+
+      },
       timeFormat (target) {
         var time = new Date(target)
         return time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds()
+      },
+      workShiftInstall () {
+        var tempForm = {
+          id: '',
+          name: '',
+          times: '',
+          days: ''
+        }
+        tempForm.id = this.form.id
+        tempForm.name = this.form.name
+        var times = ''
+        var days = ''
+        for (var i = 0; i < this.form.days.length; i++) {
+          days += ',' + this.form.days[i]
+        }
+        for (var j = 0; j < this.form.times.length; j++) {
+          times += ',' + dateFormat.hourToSecond(this.form.times[j].startTime)
+          times += ',' + dateFormat.hourToSecond(this.form.times[j].endTime)
+        }
+        tempForm.days = character.commasRemove(days)
+        tempForm.times = character.commasRemove(times)
+        return tempForm
       }
+
     }
   }
 </script>

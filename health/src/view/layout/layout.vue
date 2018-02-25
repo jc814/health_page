@@ -71,7 +71,7 @@ export default {
               index: 'workShift',
               name: '班次管理'
             }, {
-              index: 'workShiftManage',
+              index: 'manage',
               name: '排班管理'
             }
           ]

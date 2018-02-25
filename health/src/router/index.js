@@ -8,7 +8,7 @@ import doctor from 'view/system/doctor'
 import hospital from 'view/system/hospital'
 import office from 'view/system/office'
 import workShift from 'view/system/workShift'
-import workShiftManage from 'view/system/workShiftManage'
+import manage from 'view/system/manage'
 import comment from 'demo/comment'
 import map from 'demo/map'
 import table from 'demo/table'
@@ -51,8 +51,8 @@ export default new Router({
           path: '/workShift',
           component: workShift
         }, {
-          path: '/workShiftManage',
-          component: workShiftManage
+          path: '/manage',
+          component: manage
         }, {
           path: '/comment',
           component: comment
