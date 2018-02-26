@@ -52,7 +52,7 @@
             <el-button size="small" type="danger"
                        @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             <el-button size="small" type="warning"
-                       @click="handleManage(scope.$index, scope.row)">安排人员</el-button>
+                       @click="manageDialog(scope.$index, scope.row)">安排人员</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -112,8 +112,15 @@
           <el-button v-else type="primary" @click="handleAdd()">确 定</el-button>
         </span>
       </el-dialog>
-      <el-dialog :title="请选择人员" :visible.sync="false" width="30%" center>
-
+      <el-dialog title="请选择人员" :visible.sync="personVisible" width="30%" center>
+        <el-transfer
+          v-model="checkPersons"
+          :data="persons">
+        </el-transfer>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="personVisible = false">取 消</el-button>
+          <el-button @click="handleManage()">确 定</el-button>
+        </span>
       </el-dialog>
     </div>
   </div>
@@ -131,6 +138,10 @@
           update: '编辑面板',
           create: '新增面板'
         },
+        persons: [],
+        doctors: [],
+        checkPersons: [],
+        personVisible: false,
         tableData: [],
         hospitalNames: [],
         form: {
@@ -183,6 +194,19 @@
           this.tableData = res.data
           this.search.totalCount = res.tatalNum
         })
+      },
+      searchDoctors () {
+        var result = []
+        var temp = {
+          hid: window.sessionStorage.getItem('hid'),
+          currentPage: 0,
+          pageSize: 0
+        }
+        this.$store.dispatch('doctor/selectDoctors', temp).then(res => {
+          this.doctors = []
+          this.doctors = res.data
+        })
+        return result
       },
       addTime () {
 
@@ -249,7 +273,16 @@
         this.dialogVisible = true
       },
       manageDialog () {
-
+        this.persons = []
+        this.searchDoctors()
+        this.doctors.forEach((doctor, index) => {
+          var temp = {
+            lable: doctor.name,
+            id: doctor.id
+          }
+          this.persons.push(temp)
+        })
+        this.personVisible = true
       },
       handleEdit () {
         var tempForm = this.workShiftInstall()
@@ -328,7 +361,7 @@
         this.searchWorkShift()
       },
       handleManage () {
-
+        this.personVisible = false
       },
       timeFormat (target) {
         var time = new Date(target)
@@ -356,7 +389,6 @@
         tempForm.times = character.commasRemove(times)
         return tempForm
       }
-
     }
   }
 </script>
