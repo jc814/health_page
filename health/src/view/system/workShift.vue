@@ -114,7 +114,11 @@
       </el-dialog>
       <el-dialog title="请选择人员" :visible.sync="personVisible" width="30%" center>
         <el-transfer
+          filterable
+          :filter-method="filterMethod"
+          filter-placeholder="请输入医生姓名"
           v-model="checkPersons"
+          :titles="['待选人员', '已选人员']"
           :data="persons">
         </el-transfer>
         <span slot="footer" class="dialog-footer">
@@ -272,13 +276,16 @@
         })
         this.dialogVisible = true
       },
+      filterMethod (query, item) {
+        return item.label.indexOf(query) > -1
+      },
       manageDialog () {
         this.persons = []
         this.searchDoctors()
         this.doctors.forEach((doctor, index) => {
           var temp = {
-            lable: doctor.name,
-            id: doctor.id
+            label: doctor.name,
+            key: doctor.id
           }
           this.persons.push(temp)
         })
