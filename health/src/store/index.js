@@ -5,6 +5,7 @@ import admin from 'store/modules/admin'
 import office from 'store/modules/office'
 import doctor from 'store/modules/doctor'
 import workShift from 'store/modules/workShift'
+import manage from 'store/modules/manage'
 import Vue from 'Vue'
 import Vuex from 'vuex'
 
@@ -44,7 +45,8 @@ const store = new Vuex.Store({
     admin,
     office,
     doctor,
-    workShift
+    workShift,
+    manage
   },
   getters: {
     id: state => { return state.id },

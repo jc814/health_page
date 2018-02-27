@@ -43,7 +43,8 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="inUse" label="是否被使用">
+        <el-table-column prop="inUsed" label="是否被使用">
+
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -388,7 +389,7 @@
           delDoctors: perons,
           wid: this.currentWorkShiftId
         }
-        this.$store.dispatch('manage/updateManage', tempForm).then(res => {
+        this.$store.dispatch('manage/insertManage', tempForm).then(res => {
           if (res === 1) {
             this.dialogVisible = false
             this.searchWorkShift()

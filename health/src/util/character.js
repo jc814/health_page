@@ -1,12 +1,11 @@
 export default {
   commasRemove (target) {
-    var result
     if (target.substr(0, 1) === ',') {
-      result = target.substr(1)
+      target = target.substr(1)
     }
-    if (result.substr(-1, 1) === ',') {
-      result = result.substr(0, result.length - 1)
+    if (target.substr(-1, 1) === ',') {
+      target = target.substr(0, target.length - 1)
     }
-    return result
+    return target
   }
 }
