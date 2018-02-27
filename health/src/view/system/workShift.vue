@@ -118,7 +118,7 @@
           :filter-method="filterMethod"
           filter-placeholder="请输入医生姓名"
           v-model="checkPersons"
-          :titles="['待选人员', '已选人员']"
+          :titles="['待选医生', '已选医生']"
           :data="persons">
         </el-transfer>
         <span slot="footer" class="dialog-footer">
@@ -142,6 +142,7 @@
           update: '编辑面板',
           create: '新增面板'
         },
+        currentWorkShiftId: '',
         persons: [],
         doctors: [],
         checkPersons: [],
@@ -279,7 +280,15 @@
       filterMethod (query, item) {
         return item.label.indexOf(query) > -1
       },
-      manageDialog () {
+      manageDialog (index, row) {
+        this.checkPersons = []
+        if (row.dids != null && row.dids !== '') {
+          var tempDoctors = row.dids.split(',')
+          for (var i = 0; i < tempDoctors.length; i++) {
+            this.checkPersons.push(parseInt(tempDoctors[i]))
+          }
+        }
+        this.currentWorkShiftId = row.id
         this.persons = []
         this.searchDoctors()
         this.doctors.forEach((doctor, index) => {
@@ -368,6 +377,32 @@
         this.searchWorkShift()
       },
       handleManage () {
+        if (this.checkPersons.length > 0) {
+          var perons = ''
+          for (var i = 0; i < this.checkPersons.length; i++) {
+            perons = perons + this.checkPersons[i] + ','
+          }
+          perons = character.commasRemove(perons)
+        }
+        var tempForm = {
+          delDoctors: perons,
+          wid: this.currentWorkShiftId
+        }
+        this.$store.dispatch('manage/updateManage', tempForm).then(res => {
+          if (res === 1) {
+            this.dialogVisible = false
+            this.searchWorkShift()
+            this.$message({
+              type: 'success',
+              message: '编辑成功!'
+            })
+          } else {
+            this.$message({
+              type: 'error',
+              message: '编辑失败!'
+            })
+          }
+        })
         this.personVisible = false
       },
       timeFormat (target) {
