@@ -15,6 +15,9 @@ const manage = {
     },
     deleteManage ({commit}, param) {
       return fetch.commonApi('/manage/deleteRecord', param)
+    },
+    manageCreate ({commit}, param) {
+      return fetch.commonApi('/manage/manageCreate', param)
     }
   }
 }

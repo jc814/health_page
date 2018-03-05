@@ -22,6 +22,9 @@
         <el-col :span="2" :offset="1">
           <el-button type="primary" @click="addDialog()" v-if="type === '0'">添加</el-button>
         </el-col>
+        <el-col :span="2" :offset="1">
+          <el-button type="primary" @click="manageCreate()" v-if="type === '0'">生成排班</el-button>
+        </el-col>
       </el-row>
     </div>
     <div>
@@ -405,6 +408,27 @@
           }
         })
         this.personVisible = false
+      },
+      manageCreate () {
+        this.$confirm('该操作会生成当月排班信息, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$store.dispatch('manage/manageCreate').then(res => {
+            if (res === 1) {
+              this.$message({
+                type: 'success',
+                message: '添加排班信息成功!'
+              })
+            } else {
+              this.$message({
+                type: 'error',
+                message: '添加排班信息失败!'
+              })
+            }
+          })
+        })
       },
       timeFormat (target) {
         var time = new Date(target)
