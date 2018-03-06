@@ -147,6 +147,7 @@
           create: '新增面板'
         },
         currentWorkShiftId: '',
+        currentManageId: '',
         persons: [],
         doctors: [],
         checkPersons: [],
@@ -286,6 +287,7 @@
       },
       manageDialog (index, row) {
         this.checkPersons = []
+        this.currentManageId = row.id
         if (row.dids != null && row.dids !== '') {
           var tempDoctors = row.dids.split(',')
           for (var i = 0; i < tempDoctors.length; i++) {
@@ -390,7 +392,8 @@
         }
         var tempForm = {
           delDoctors: perons,
-          wid: this.currentWorkShiftId
+          wid: this.currentWorkShiftId,
+          mid: this.currentManageId
         }
         this.$store.dispatch('manage/insertManage', tempForm).then(res => {
           if (res === 1) {
